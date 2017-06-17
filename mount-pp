@@ -1,0 +1,31 @@
+#!/usr/bin/python
+# Print /etf/fstab getting the fields as close to their intended columns as may
+# be.  Long fields push the remainder of the line over as little as is possible
+# so that the columns come nearer to alignment.
+
+import	os
+
+def pad(parts,cols):
+    s = ""
+    while len(parts) > 0:
+        c = cols.pop(0)
+        l = len(s)
+        n = c - l
+        if n < 1 and c > 0: n = 1
+        s = s + " " * n + parts.pop(0)
+    return s
+
+fd = open( "/proc/mounts", "r" )
+lines = fd.readlines()
+lines.sort()
+for line in lines:
+    parts = line.strip().split()
+    opts = parts[3].split(',')
+    opts.sort()
+    parts[3]  = ",".join(opts)
+    #
+    line = pad(parts,[
+        0, 15, 37, 46, 77, 79
+    ])
+    print line
+fd.close()
